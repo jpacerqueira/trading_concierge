@@ -1,0 +1,115 @@
+:root {
+  /* White theme: light base with blue-to-black contrast + fbd icon accents */
+  --fbd-bg: #f8f5f0;
+  --fbd-surface: #ffffff;
+  --fbd-surface-2: #e8ecf2;
+  --fbd-text: #1a1d26;
+  --fbd-muted: #4a5268;
+  --fbd-accent: #fd7e51;
+  --fbd-accent-strong: #fea449;
+  --fbd-link: #7bb0e8;
+  --fbd-border: #c5d0e0;
+  /* Desktop shell (index.html) uses --dxc-*; mirror fbd so vars always resolve */
+  --dxc-bg: var(--fbd-bg);
+  --dxc-surface: var(--fbd-surface);
+  --dxc-surface-2: var(--fbd-surface-2);
+  --dxc-text: var(--fbd-text);
+  --dxc-muted: var(--fbd-muted);
+  /* Desktop shell primary actions: slate grey (darker than border/surface-2, distinct from muted text) */
+  --dxc-accent: #485064;
+  --dxc-accent-strong: #3a4150;
+  --dxc-link: var(--fbd-link);
+  --dxc-border: var(--fbd-border);
+}
+ 
+ .stApp {
+   background-color: var(--fbd-bg);
+   color: var(--fbd-text);
+ }
+ 
+ [data-testid="stSidebar"] {
+   background-color: var(--fbd-surface);
+   border-right: 1px solid var(--fbd-border);
+ }
+ 
+ h1, h2, h3, h4, h5, h6 {
+   color: var(--fbd-text);
+   letter-spacing: 0.2px;
+ }
+ 
+ .stMarkdown, .stText, .stCaption, label, p, li {
+   color: var(--fbd-text);
+ }
+ 
+ a, .stMarkdown a {
+   color: var(--fbd-link);
+ }
+ 
+.stButton > button {
+  background: var(--fbd-accent);
+  color: #1a1d26;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+}
+
+.stButton > button:hover {
+  background: var(--fbd-accent-strong);
+  color: #1a1d26;
+  border-color: var(--fbd-accent-strong);
+}
+ 
+ .stTextInput input,
+ .stTextArea textarea,
+ .stSelectbox div[data-baseweb="select"] > div,
+ .stNumberInput input {
+   background-color: var(--fbd-surface-2) !important;
+   color: var(--fbd-text) !important;
+   border: 1px solid var(--fbd-border) !important;
+   border-radius: 8px;
+ }
+ 
+ .stTextInput input:focus,
+ .stTextArea textarea:focus,
+ .stSelectbox div[data-baseweb="select"] > div:focus,
+ .stNumberInput input:focus {
+   border-color: var(--fbd-accent) !important;
+   box-shadow: 0 0 0 1px var(--fbd-accent);
+ }
+ 
+ [data-testid="stExpander"] {
+   border: 1px solid var(--fbd-border);
+   border-radius: 10px;
+   background: var(--fbd-surface-2);
+ }
+ 
+ [data-testid="stExpander"] summary {
+   color: var(--fbd-text);
+   font-weight: 600;
+ }
+ 
+ .stAlert {
+   border-radius: 10px;
+   border: 1px solid var(--fbd-border);
+   background-color: var(--fbd-surface);
+   color: var(--fbd-text);
+ }
+ 
+ .stDataFrame, .stTable {
+   background-color: var(--fbd-surface-2);
+   border: 1px solid var(--fbd-border);
+   border-radius: 10px;
+ }
+ 
+ .stRadio div[role="radiogroup"] label {
+   background: var(--fbd-surface-2);
+   border: 1px solid var(--fbd-border);
+   border-radius: 8px;
+   padding: 0.25rem 0.75rem;
+   margin-right: 0.5rem;
+ }
+ 
+ .stRadio div[role="radiogroup"] input:checked + div {
+   border-color: var(--fbd-accent);
+ }

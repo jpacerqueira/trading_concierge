@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trade-blotter-hitl-agent"
+version = "1.0.0"
+description = "Google ADK agent for a Trade Blotter MCP server (HTTP bridge) with Human-in-the-Loop approval on mutating tools."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Qodea" }]
+keywords = ["adk", "mcp", "agent", "hitl", "trade-blotter", "agentskills"]
+
+dependencies = [
+  "google-adk>=0.6.0",
+  "google-genai>=0.5.0",
+  "httpx>=0.27",
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "PyYAML>=6.0",
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "respx>=0.21",
+  "ruff>=0.5",
+]
+
+[project.scripts]
+trade-blotter-list-tools = "trade_blotter_hitl_agent.scripts_entry:list_tools_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["trade_blotter_hitl_agent"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MY Trader Concierge</title>
+    <link rel="stylesheet" href="/css/app_theme.css" />
+    <style>
+      body {
+        font-family: "Inter", "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--dxc-bg);
+        color: var(--dxc-text);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 3rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      header {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      h1 .app-title-icon {
+        height: 1.75rem;
+        width: auto;
+        vertical-align: middle;
+      }
+      .status-pill {
+        padding: 0.4rem 0.8rem;
+        border-radius: 999px;
+        background: var(--dxc-surface-2);
+        border: 1px solid var(--dxc-border);
+        font-size: 0.85rem;
+      }
+      .panel {
+        background: var(--dxc-surface);
+        border: 1px solid var(--dxc-border);
+        border-radius: 14px;
+        padding: 1.25rem;
+      }
+      .panel h2 {
+        margin-top: 0;
+        font-size: 1.05rem;
+      }
+      .panel p {
+        margin-top: 0.5rem;
+        color: var(--dxc-muted);
+        font-size: 0.9rem;
+      }
+      label {
+        display: block;
+        margin: 0.6rem 0 0.35rem;
+        color: var(--dxc-muted);
+        font-size: 0.85rem;
+      }
+      input {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--dxc-border);
+        background: var(--dxc-surface-2);
+        color: var(--dxc-text);
+        padding: 0.55rem 0.75rem;
+      }
+      .chat {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        height: 100%;
+      }
+      .chat-window {
+        background: var(--dxc-surface-2);
+        border: 1px solid var(--dxc-border);
+        border-radius: 14px;
+        padding: 1rem;
+        min-height: 420px;
+        max-height: 520px;
+        overflow-y: auto;
+      }
+      .message {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .message:last-child {
+        margin-bottom: 0;
+      }
+      .message .role {
+        font-weight: 600;
+        min-width: 72px;
+        color: var(--dxc-muted);
+      }
+      .message .bubble {
+        background: var(--dxc-surface);
+        border: 1px solid var(--dxc-border);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        flex: 1;
+      }
+      .message.user .bubble {
+        background: rgba(72, 80, 100, 0.12);
+        border-color: rgba(72, 80, 100, 0.32);
+      }
+      .message.assistant .bubble {
+        background: rgba(73, 149, 255, 0.1);
+        border-color: rgba(73, 149, 255, 0.35);
+      }
+      .message.email-preview .bubble {
+        background: rgba(73, 149, 255, 0.04);
+        border-color: rgba(73, 149, 255, 0.18);
+        white-space: normal;
+      }
+      .message.email-preview .bubble pre {
+        white-space: pre-wrap;
+      }
+      .email-preview-caption {
+        margin: 0 0 0.75rem;
+        font-size: 0.85rem;
+        color: #1a1d26;
+      }
+      #emailPreviewContent {
+        max-height: 320px;
+        overflow: auto;
+        color: #1a1d26;
+        font-weight: 400;
+      }
+      #emailPreviewContent table,
+      #emailPreviewContent pre,
+      #emailPreviewContent h4,
+      #emailPreviewContent div,
+      #emailPreviewContent th,
+      #emailPreviewContent td {
+        color: #1a1d26 !important;
+        font-weight: 400;
+      }
+      .composer {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+      textarea {
+        flex: 1;
+        border-radius: 10px;
+        border: 1px solid var(--dxc-border);
+        background: var(--dxc-surface-2);
+        color: var(--dxc-text);
+        padding: 0.65rem 0.9rem;
+        min-height: 70px;
+        resize: vertical;
+      }
+      button {
+        background: var(--dxc-accent);
+        color: #ffffff;
+        border: 1px solid color-mix(in srgb, var(--dxc-accent) 70%, #1a1d26);
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(26, 29, 38, 0.12);
+      }
+      button:hover {
+        background: var(--dxc-accent-strong);
+        border-color: color-mix(in srgb, var(--dxc-accent-strong) 75%, #1a1d26);
+      }
+      .button-secondary {
+        background: var(--dxc-surface);
+        color: var(--dxc-muted);
+        border: 2px solid var(--dxc-border);
+        font-weight: 600;
+        box-shadow: none;
+      }
+      .button-secondary:hover {
+        background: var(--dxc-surface-2);
+        border-color: var(--dxc-accent);
+        color: var(--dxc-text);
+      }
+      .toolbar {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .divider {
+        height: 1px;
+        background: var(--dxc-border);
+        margin: 1rem 0;
+      }
+      .link {
+        color: var(--dxc-link);
+        text-decoration: none;
+      }
+      .link:hover {
+        text-decoration: underline;
+      }
+      pre {
+        background: var(--dxc-surface-2);
+        border: 1px solid var(--dxc-border);
+        border-radius: 10px;
+        padding: 0.85rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 220px;
+        overflow: auto;
+        margin: 0.75rem 0 0;
+      }
+      .resources-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.75rem 0 0;
+      }
+      .resources-list .resource-item {
+        background: var(--dxc-surface-2);
+        border: 1px solid var(--dxc-border);
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .resources-list .resource-item:hover {
+        border-color: var(--dxc-accent);
+        color: var(--dxc-accent);
+      }
+      #resourceContentOutput {
+        max-height: 360px;
+      }
+      .iterate-hint {
+        border-left: 4px solid var(--dxc-accent);
+      }
+      .iterate-hint-text {
+        margin-top: 0;
+        color: var(--dxc-muted);
+        font-size: 0.9rem;
+      }
+      .tab-bar {
+        display: flex;
+        gap: 0.625rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+      .tab-button {
+        flex: 1 1 auto;
+        min-width: 11.25rem;
+        background: var(--dxc-surface-2);
+        color: var(--dxc-muted);
+        border: 1px solid var(--dxc-border);
+        border-radius: 10px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .tab-button.tab-active {
+        background: var(--dxc-accent);
+        color: #ffffff;
+        border: 1px solid color-mix(in srgb, var(--dxc-accent) 70%, #1a1d26);
+        box-shadow: 0 1px 2px rgba(26, 29, 38, 0.12);
+      }
+      .tab-panel[hidden] {
+        display: none !important;
+      }
+      .hitl-iframe-wrap {
+        margin-top: 0.75rem;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--dxc-border);
+        background: #fff;
+        min-height: 520px;
+      }
+      .hitl-iframe-wrap iframe {
+        width: 100%;
+        height: 560px;
+        border: 0;
+        display: block;
+      }
+      #approvalGate {
+        border-left: 4px solid #c9a227;
+      }
+      #approvalGate h3 {
+        margin-top: 0;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body class="stApp">
+    <div class="container">
+      <header>
+        <h1>MY Trader Concierge <img src="/css/FBData_icon.png" alt="FBData" class="app-title-icon" /></h1>
+        <div class="toolbar">
+          <button class="button-secondary" id="toggleMcpPanel">Hide MCP Control</button>
+          <div class="status-pill" id="healthStatus">Checking MCP bridge...</div>
+        </div>
+      </header>
+
+      <nav class="tab-bar" aria-label="Main views">
+        <button type="button" class="tab-button tab-active" data-tab="chat" id="tabBtnChat">Trade chat</button>
+        <button type="button" class="tab-button" data-tab="hitl" id="tabBtnHitl">Human in the loop</button>
+      </nav>
+
+      <main class="panel chat" id="tabPanelChat">
+        <div>
+          <h2>Trade Blotter Chat</h2>
+        </div>
+
+        <div class="chat-window" id="chatWindow"></div>
+
+        <div class="composer">
+          <textarea
+            id="chatInput"
+            placeholder="Ask about trades, views, schema, or health. Example: Show EUR/USD trades with Status=Ins"
+          ></textarea>
+          <button id="sendMessage">Send</button>
+        </div>
+
+        <div class="panel" id="approvalGate" style="display: none;">
+          <h3>Approve mutating operation</h3>
+          <p style="margin: 0 0 0.5rem; color: var(--dxc-muted); font-size: 0.9rem;">
+            The assistant wants to run a state-changing MCP tool. Review the payload, then approve or reject.
+          </p>
+          <pre id="approvalDetails"></pre>
+          <div class="toolbar">
+            <button type="button" id="approvalApprove">Approve and run</button>
+            <button type="button" class="button-secondary" id="approvalReject">Reject</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="button-secondary" id="approveResultsForEmail">Approve results for email</button>
+          <button class="button-secondary" id="summarizeChat">Summarize chat</button>
+          <button class="button-secondary" id="clearChat">Clear chat</button>
+        </div>
+
+        <div id="emailPreviewInApp" class="message email-preview" style="display: none;">
+          <div class="role">Email</div>
+          <div class="bubble email-bubble">
+            <p class="email-preview-caption">Preview — email content appears here.</p>
+            <div id="emailPreviewContent"></div>
+            <div class="toolbar" style="margin-top: 0.75rem;">
+              <button class="button-secondary" id="openInOutlookGmail">Open in Outlook / Gmail</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="iterateHint" class="panel iterate-hint" style="display: none;">
+          <p class="iterate-hint-text"></p>
+          <div class="toolbar">
+            <button class="button-secondary" id="useAsNextRequest">Reasoning with Assistance Answer</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <section class="panel" id="mcpPanel">
+          <h2>MCP Control</h2>
+          <p>Use the tools, resources, and prompts available from the MCP server.</p>
+          <div class="toolbar">
+            <button class="button-secondary" data-action="tools">List Tools</button>
+            <button class="button-secondary" data-action="resources">List Resources</button>
+            <button class="button-secondary" data-action="prompts">List Prompts</button>
+          </div>
+          <pre id="discoveryOutput">Click a button to load MCP metadata.</pre>
+
+          <div class="divider"></div>
+
+          <h2>MCP Resources (API Documentation &amp; Guidance)</h2>
+          <p>List resources from the MCP server, then read one to view the Trade Blotter API Documentation or other guidance.</p>
+          <div class="toolbar">
+            <button class="button-secondary" id="loadResourcesList">Load resources list</button>
+          </div>
+          <div id="resourcesListContainer" class="resources-list"></div>
+          <pre id="resourceContentOutput">Click a resource above to read it via the server (read_resource).</pre>
+
+          <div class="divider"></div>
+
+          <h2>Read Resource</h2>
+          <label for="resourceUri">Resource URI</label>
+          <input id="resourceUri" placeholder="resource://trade-blotter/api-docs" />
+          <button id="readResource">Read Resource</button>
+          <pre id="resourceOutput">Resource content appears here.</pre>
+        </section>
+
+      </main>
+
+      <div id="tabPanelHitl" hidden>
+        <section class="panel">
+          <h2>Human validation Concierge (HITL with ADK)</h2>
+          <p>
+            Google ADK web UI with <code>request_trade_action</code> / <code>execute_*</code> gating.
+            At startup the HITL agent loads the same <strong>MCP resources, prompts, and tools</strong> as this stack,
+            plus markdown skills that describe how the <strong>Trade chat</strong> tab (Express + this page) behaves—so
+            answers here stay aligned with the desktop Concierge.
+          </p>
+          <p style="margin: 0;">
+            <a class="link" id="hitlAdkOpen" href="#" target="_blank" rel="noopener noreferrer">Open ADK UI in a new tab</a>
+          </p>
+          <div class="hitl-iframe-wrap">
+            <iframe id="hitlAdkFrame" title="Trade Blotter ADK HITL"></iframe>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Task planning &amp; validation (A2A)</h2>
+          <p>
+            Calls the HITL container&rsquo;s A2A JSON API (plan decomposition and step validation) via the desktop proxy.
+          </p>
+          <label for="hitlPlanGoal">Goal</label>
+          <textarea id="hitlPlanGoal" style="min-height: 72px; width: 100%; box-sizing: border-box;" placeholder="e.g. List views, then query trades for view X with Status=Ins"></textarea>
+          <div class="toolbar" style="margin-top: 0.75rem;">
+            <button type="button" class="button-secondary" id="hitlPlanRun">Generate plan</button>
+            <button type="button" class="button-secondary" id="hitlSkillsLoad">Load HITL skills summary</button>
+          </div>
+          <pre id="hitlPlanOutput" style="margin-top: 0.75rem;">Run &ldquo;Generate plan&rdquo; or open the ADK iframe.</pre>
+        </section>
+      </div>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

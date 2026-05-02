@@ -1,0 +1,110 @@
+services:
+  trade-api:
+    build:
+      context: ./tradeQueryApi
+    container_name: trade-api
+    ports:
+      - "8000:8000"
+    networks:
+      - mcp-trade-blotter
+
+  mcp-server:
+    build:
+      context: ./mcp
+    container_name: mcp-server
+    environment:
+      - TRADE_API_BASE_URL=http://trade-api:8000
+      # - TRADE_API_BASE_URL=https://mxXXXXXXXXXvm.hackathon.MMMMMM.com:99999
+      # TRADE_API_BASE_URL is the base URL for the trade API local is http://trade-api:8000
+      # Murex credentials are used to authenticate with the Murex API
+      - MX_USERNAME=${MX_USERNAME:-XXXXXXXXX}
+      - MX_PASSWORD=${MX_PASSWORD:-XXXXXXXXX}
+      - MX_GROUP=${MX_GROUP:-XXXXXXXXX} # Trading group
+      - MX_FO_DESK=${MX_FO_DESK:-XXXXXXXXX} # Front office desk
+    ports:
+      - "7001:7001"
+    depends_on:
+      - trade-api
+    networks:
+      - mcp-trade-blotter
+
+  desktop-app:
+    build:
+      context: .
+      dockerfile: desktopApp/Dockerfile
+    container_name: desktop-app
+    environment:
+      - MCP_HTTP_BASE_URL=http://mcp-server:7001
+      - PORT=5173
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GEMINI_INFERENCE_MODEL=${GEMINI_INFERENCE_MODEL:-gemini-3.1-pro-preview}
+      - GEMINI_EMBEDDING_MODEL=${GEMINI_EMBEDDING_MODEL:-models/gemini-embedding-001}
+      # HITL / A2A: service URL inside the stack; browser uses public ADK URL for iframe
+      - HITL_A2A_BASE_URL=http://trade-blotter-hitl-agent:8100
+      - HITL_ADK_WEB_PUBLIC_URL=${HITL_ADK_WEB_PUBLIC_URL:-http://localhost:8200}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - mcp-server
+      - trade-blotter-hitl-agent
+    networks:
+      - mcp-trade-blotter
+  
+  trade-blotter-hitl-agent:
+    build:
+      context: ./trade-blotter-hitl-agent
+      dockerfile: Dockerfile
+    container_name: trade-blotter-hitl-agent
+    environment:
+      # --- MCP HTTP bridge --------------------------------------------------
+      - MCP_BRIDGE_URL=http://mcp-server:7001
+      - MCP_BRIDGE_TIMEOUT=30
+      # - MCP_BRIDGE_TOKEN=
+
+      # --- Trade REST API (direct HITL tools: trade_api_*) -------------------
+      - TRADE_API_BASE_URL=http://trade-api:8000
+      - TRADE_API_DIRECT_TOOLS=true
+      # Optional: TRADE_API_BEARER_TOKEN=...  (or Murex OAuth via MX_* below)
+      - MX_USERNAME=${MX_USERNAME:-XXXXXXXXX}
+      - MX_PASSWORD=${MX_PASSWORD:-XXXXXXXXX}
+      - MX_GROUP=${MX_GROUP:-XXXXXXXXX}
+      - MX_FO_DESK=${MX_FO_DESK:-XXXXXXXXX}
+      # - MX_LOAD_BALANCER_URL=https://...   # required for OAuth when TRADE_API is remote
+
+      # --- Gemini / ADK -----------------------------------------------------
+      # Either GOOGLE_API_KEY (AI Studio) or GEMINI_API_KEY (compose-style)
+      # is forwarded; pydantic-settings reads GOOGLE_API_KEY.
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ADK_MODEL=${ADK_MODEL:-gemini-3.1-pro-preview}
+
+      # --- A2A HTTP (FastAPI alongside adk web) -----------------------------
+      - A2A_PORT=8100
+      - A2A_ENABLED=true
+      # Comma-separated browser origins allowed to call A2A from the desktop UI
+      - A2A_CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+      # --- HITL classification ---------------------------------------------
+      - TOOL_CLASSIFICATION_PATH=/app/assets/tool_classification.yaml
+      - HITL_FAIL_CLOSED=${HITL_FAIL_CLOSED:-true}
+
+      # --- Entrypoint wait ---------------------------------------------------
+      - MCP_BRIDGE_WAIT_SECONDS=120
+      - MCP_LIST_TOOLS_ON_STARTUP=true
+    ports:
+      # `adk web` listens on 8000 inside the container; publish on 8200 since
+      # trade-api already owns 8000 on the host.
+      - "8200:8000"
+      # Agent-to-agent JSON API (planning, classification, validation)
+      - "8100:8100"
+    depends_on:
+      - trade-api
+      - mcp-server
+    networks:
+      - mcp-trade-blotter
+
+
+networks:
+  mcp-trade-blotter:
+    name: mcp-trade-blotter

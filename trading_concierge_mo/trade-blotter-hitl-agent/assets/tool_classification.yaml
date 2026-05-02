@@ -1,0 +1,49 @@
+# Trade Blotter HITL agent — tool classification rules.
+#
+# Patterns are matched (in order) against MCP tool names using fnmatch (the
+# same shell-glob syntax used by Python's fnmatch.fnmatchcase).
+#
+# read_only  -> the agent calls the MCP tool directly.
+# mutating   -> the agent must obtain human approval via
+#               `request_trade_action` before calling `execute_<name>`.
+#
+# `fail_closed: true` (the default) means MCP tools that match neither list
+# are treated as mutating. Flip to false if you want unknown tools to default
+# to read-only — only do this in trusted environments.
+
+fail_closed: true
+
+read_only:
+  - "trade_api_*"      # direct REST to Trade API (HITL); always read-only
+  - "check_*"
+  - "list_*"
+  - "get_*"
+  - "search_*"
+  - "read_*"
+  - "describe_*"
+  - "fetch_*"
+  - "show_*"
+  - "find_*"
+  - "lookup_*"
+  - "query_*"
+  - "blotter_*"          # blotter_get_open, blotter_get_filled, ...
+  - "*_summary"
+  - "*_balance"
+  - "*_quote"
+  - "health"
+  - "ping"
+
+mutating:
+  - "place_*"            # place_trade, place_order, ...
+  - "submit_*"           # submit_order, ...
+  - "cancel_*"           # cancel_trade, cancel_order, ...
+  - "amend_*"            # amend_trade, ...
+  - "modify_*"
+  - "delete_*"
+  - "create_*"
+  - "update_*"
+  - "set_*"
+  - "approve_*"
+  - "reject_*"
+  - "transfer_*"
+  - "trade_*"            # trade_buy, trade_sell, ...
