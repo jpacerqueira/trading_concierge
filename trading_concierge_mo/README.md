@@ -1,6 +1,6 @@
 # Trading Concierge MO
 
-## Trading Mid-Office - Multi-Agent Desktop APP
+## Trading MO(middle-office)  - Multi-Agent Desktop APP
 ## Built with GEMINI 3.1 -  MCP + API Knowledge transfer + HITL ADK
 ### Test the Concierge chatbot
 ### Test the Human-in-the-Loop process(HITL) with explained steps
